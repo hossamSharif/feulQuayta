@@ -1,0 +1,14 @@
+{
+  "station_user": "Station User",
+  "admin": "Admin",
+  "plate_placeholder": "Enter vehicle plate number",
+  "search": "Search",
+  "no_client_found": "No client found for this plate number",
+  "quota_balances": "Quota Balances",
+  "outstanding_balance": "Outstanding Balance",
+  "fill_up": "Record Fill-up",
+  "overages": "Overage Requests",
+  "payments": "Payments",
+  "quota_reset": "Quota Reset",
+  "reports": "Reports"
+}
