@@ -1,21 +1,31 @@
 "use client";
+
 import { useState, useCallback } from "react";
 import { supabase } from "@/supabase/client";
 import { logClientLookup } from "@/lib/logger";
+import { FillUpForm } from "@/components/station/fillup-form";
+import { ClientDetail } from "@/components/station/client-detail";
+import { OfflineGuard } from "@/components/station/offline-guard";
+import { useOnline } from "@/components/station/offline-guard";
 
 export default function StationPage() {
   const [plate, setPlate] = useState("");
   const [client, setClient] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [fuelTypes, setFuelTypes] = useState<
+    { id: string; name: string; unit: string }[]
+  >([]);
+  const isOnline = useOnline();
 
   const handleLookup = useCallback(async () => {
     if (!plate.trim()) return;
     setLoading(true);
     setError("");
     try {
-      const { data, error: err } = await supabase
-        .rpc("lookup_client_by_plate", { p_plate: plate.trim() });
+      const { data, error: err } = await supabase.rpc("lookup_client_by_plate", {
+        p_plate: plate.trim(),
+      });
       if (err) throw err;
       if (!data || data.length === 0) {
         setError("No client found for this plate number");
@@ -31,6 +41,14 @@ export default function StationPage() {
       setLoading(false);
     }
   }, [plate]);
+
+  async function loadFuelTypes() {
+    const { data, error } = await supabase
+      .from("fuel_types")
+      .select("id, name, unit")
+      .order("name");
+    if (!error && data) setFuelTypes(data as any[]);
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
@@ -54,19 +72,22 @@ export default function StationPage() {
         </div>
         {error && <p className="text-red-500 mb-4">{error}</p>}
         {client && (
-          <div className="rounded-lg border p-4">
-            <h2 className="text-xl font-semibold">{client.name}</h2>
-            <p className="text-muted-foreground">{client.contact_info}</p>
-            <h3 className="mt-4 font-semibold">Quota Balances</h3>
-            {client.quotas?.map((q: any, i: number) => (
-              <div key={i} className="flex justify-between py-1">
-                <span>{q.fuel_type}:</span>
-                <span>{q.remaining_liters}L / {q.amount_liters}L</span>
-              </div>
-            ))}
-            <h3 className="mt-4 font-semibold">Outstanding Balance</h3>
-            <p className="text-2xl font-bold">${client.outstanding_balance?.toFixed(2)}</p>
-          </div>
+          <OfflineGuard
+            clientScope={client.quotas?.[0]?.scope ?? null}
+            isClientOnline={isOnline}
+          >
+            <ClientDetail client={client} />
+            <div className="mt-4">
+              <h3 className="text-lg font-semibold mb-2">Record Fill-up</h3>
+              <FillUpForm
+                plate={plate}
+                clientId={client.id}
+                vehicleId={client.vehicles?.[0]?.id ?? ""}
+                stationId=""
+                fuelTypes={fuelTypes}
+              />
+            </div>
+          </OfflineGuard>
         )}
       </div>
     </main>

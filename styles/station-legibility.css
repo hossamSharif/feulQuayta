@@ -1,0 +1,38 @@
+/* Station User screen — outdoor daylight and low-light legibility */
+
+.station-legible {
+  @apply bg-background text-foreground;
+}
+
+/* High-contrast outdoor mode */
+.station-outdoor {
+  @apply text-foreground;
+  /* Ensure minimum 4.5:1 contrast ratio against background */
+  color: hsl(222.2 84% 4.9%);
+}
+
+/* Large tap targets for glove-friendly use */
+.station-btn {
+  @apply min-h-[48px] min-w-[48px] rounded-lg px-6 py-3 font-bold;
+}
+
+/* High-contrast input fields for outdoor use */
+.station-input {
+  @apply w-full rounded-lg border-2 border-input bg-background p-4 text-2xl font-medium text-foreground;
+}
+
+/* Text that must be readable in direct sunlight */
+.station-text-primary {
+  @apply text-2xl font-bold text-foreground;
+}
+
+.station-text-secondary {
+  @apply text-lg text-muted-foreground;
+}
+
+/* Dark mode outdoor optimization */
+@media (prefers-color-scheme: dark) {
+  .station-outdoor {
+    color: hsl(0 0% 100%);
+  }
+}
