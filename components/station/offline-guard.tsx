@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useOnline } from "@/hooks/use-online";
 import { isNetworkWideClient } from "@/lib/offline-write-queue";
-import { supabase } from "@/supabase/client";
 
 interface OfflineGuardProps {
   children: React.ReactNode;
@@ -68,23 +66,4 @@ export function OfflineGuard({
       {children}
     </>
   );
-}
-
-export function useOnline(): boolean {
-  const [isOnline, setIsOnline] = useState(true);
-
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
-
-  return isOnline;
 }

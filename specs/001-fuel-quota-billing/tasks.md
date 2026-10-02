@@ -67,7 +67,7 @@ description: Task list for fuel-quota and post-pay billing management system —
 
 ### Tests for User Story 1
 
-- [ ] T017 [P] [US1] Write Playwright E2E test: client lookup by plate returns quota and balance (`e2e/us1-client-lookup.spec.ts`)
+- [x] T017 [P] [US1] Write Playwright E2E test: client lookup by plate returns quota and balance (`e2e/us1-client-lookup.spec.ts`)
 
 ### Implementation for User Story 1
 

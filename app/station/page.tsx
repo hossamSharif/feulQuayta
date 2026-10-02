@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/supabase/client";
 import { logClientLookup } from "@/lib/logger";
 import { FillUpForm } from "@/components/station/fillup-form";
 import { ClientDetail } from "@/components/station/client-detail";
 import { OfflineGuard } from "@/components/station/offline-guard";
-import { useOnline } from "@/components/station/offline-guard";
+import { useOnline } from "@/hooks/use-online";
+import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function StationPage() {
   const [plate, setPlate] = useState("");
@@ -17,6 +19,15 @@ export default function StationPage() {
     { id: string; name: string; unit: string }[]
   >([]);
   const isOnline = useOnline();
+  const { profile, loading: authLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && profile && profile.role !== 'station_user') {
+      // Redirect non-station users away from station page
+      router.push('/');
+    }
+  }, [authLoading, profile, router]);
 
   const handleLookup = useCallback(async () => {
     if (!plate.trim()) return;

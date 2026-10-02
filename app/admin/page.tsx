@@ -1,6 +1,21 @@
+'use client';
+
 import Link from "next/link";
+import { useAuth } from "@/app/context/AuthContext";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AdminPage() {
+  const { profile, loading: authLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && profile && profile.role !== 'admin') {
+      // Redirect non-admin users away from admin page
+      router.push('/');
+    }
+  }, [authLoading, profile, router]);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-background">
       <h1 className="text-4xl font-bold text-primary mb-8">Admin Dashboard</h1>
